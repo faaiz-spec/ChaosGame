@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstdlib> 
+#include <ctime>
 
 //Make the code easier to type with "using namespace"
 using namespace sf;
@@ -11,6 +13,7 @@ using namespace std;
 
 int main()
 {
+	srand(static_cast<unsigned int>(time(0)));
 	// Create a video mode object
 	VideoMode vm(1920, 1080);
 	// Create and open a window for the game
@@ -50,6 +53,7 @@ int main()
 			    {
 				///fourth click
 				///push back to points vector
+					points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
 			    }
 			}
 		    }
@@ -70,6 +74,17 @@ int main()
 		    ///select random vertex
 		    ///calculate midpoint between random vertex and the last point in the vector
 		    ///push back the newly generated coord.
+			for (int i = 0; i < 5; ++i) // Generate 5 points per frame for faster visualization
+			{
+				// Select a random vertex
+				int randomIndex = rand() % vertices.size();
+				// Calculate the midpoint between the random vertex and the last point
+				Vector2f lastPoint = points.back();
+				Vector2f randomVertex = vertices[randomIndex];
+				Vector2f newPoint((lastPoint.x + randomVertex.x) / 2, (lastPoint.y + randomVertex.y) / 2);
+				// Push back the newly generated point
+				points.push_back(newPoint);
+			}
 		}
 	
 		/*
@@ -85,6 +100,14 @@ int main()
 		    rect.setFillColor(Color::Blue);
 		    window.draw(rect);
 		}
+		for (const auto& point : points)
+		{
+			RectangleShape rect(Vector2f(2, 2)); // Smaller points
+			rect.setPosition(point);
+			rect.setFillColor(Color::Red);
+			window.draw(rect);
+		}
+
 		window.display();
 	}
 }
