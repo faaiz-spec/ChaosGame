@@ -45,7 +45,7 @@ int main()
 			    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
 			    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
 	
-			    if(vertices.size() < 3)
+			    if(vertices.size() < 4)
 			    {
 				vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
 			    }
@@ -57,6 +57,15 @@ int main()
 			    }
 			}
 		    }
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == Keyboard::R)
+				{
+					// Reset the game
+					vertices.clear();
+					points.clear();
+				}
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
@@ -97,7 +106,8 @@ int main()
 		{
 		    RectangleShape rect(Vector2f(10,10));
 		    rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
-		    rect.setFillColor(Color::Blue);
+			rect.setPosition(vertices[i]);
+			rect.setFillColor(Color::Blue);
 		    window.draw(rect);
 		}
 		for (const auto& point : points)
@@ -105,6 +115,25 @@ int main()
 			RectangleShape rect(Vector2f(2, 2)); // Smaller points
 			rect.setPosition(point);
 			rect.setFillColor(Color::Red);
+			window.draw(rect);
+			float minDistance = std::numeric_limits<float>::max();
+			for (const auto& vertex : vertices)
+			{
+				float distance = sqrt(pow(point.x - vertex.x, 2) + pow(point.y - vertex.y, 2));
+				if (distance < minDistance)
+				{
+					minDistance = distance;
+				}
+			}
+
+			// Change color based on distance
+			if (minDistance < 50)
+				rect.setFillColor(Color::Red);
+			else if (minDistance < 100)
+				rect.setFillColor(Color::Yellow);
+			else
+				rect.setFillColor(Color::Green);
+
 			window.draw(rect);
 		}
 
