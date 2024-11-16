@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib> 
+#include <cmath>
 #include <ctime>
 
 //Make the code easier to type with "using namespace"
