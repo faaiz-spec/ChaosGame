@@ -45,7 +45,7 @@ int main()
 			    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
 			    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
 	
-			    if(vertices.size() < 4)
+			    if(vertices.size() < 3)
 			    {
 				vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
 			    }
