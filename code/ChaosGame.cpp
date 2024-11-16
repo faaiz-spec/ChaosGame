@@ -107,7 +107,7 @@ int main()
 		{
 		    RectangleShape rect(Vector2f(10,10));
 		    rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
-			rect.setPosition(vertices[i]);
+			//rect.setPosition(vertices[i]);
 			rect.setFillColor(Color::Blue);
 		    window.draw(rect);
 		}
@@ -115,8 +115,8 @@ int main()
 		{
 			RectangleShape rect(Vector2f(2, 2)); // Smaller points
 			rect.setPosition(point);
-			rect.setFillColor(Color::Red);
-			window.draw(rect);
+			//rect.setFillColor(Color::Red);
+			//window.draw(rect);
 			float minDistance = std::numeric_limits<float>::max();
 			for (const auto& vertex : vertices)
 			{
