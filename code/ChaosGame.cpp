@@ -82,7 +82,7 @@ int main()
 				// left click
 				if (event.mouseButton.button == Mouse::Left)
 				{
-					cout << "LMB: " << event.mouseButton.x << " " << event.mouseButton.y << endl;
+					//cout << "LMB: " << event.mouseButton.x << " " << event.mouseButton.y << endl;
 
 					// only set vertices before right mouse button is pressed
 					if (!RMBPressed)
@@ -146,12 +146,12 @@ int main()
 									maxDistance = distance;
 							}
 						}
-						cout << "Max distance: " << maxDistance << endl;
+						//cout << "Max distance: " << maxDistance << endl;
 
 					}
 
 					RMBPressed = true; // once right mouse button is pressed, game moves on to drawing phase and you can no longer edit things
-					cout << "RMB: " << event.mouseButton.x << " " << event.mouseButton.y << endl;
+					//cout << "RMB: " << event.mouseButton.x << " " << event.mouseButton.y << endl;
 
 				}
 			}
@@ -160,7 +160,7 @@ int main()
 			if (event.type == Event::TextEntered)
 			{
 				input += static_cast<char>(event.text.unicode);
-				cout << input << endl;
+				//cout << input << endl;
 				string str = "\n\n\n\nEnter float: " + input.substr(1);
 				if (tolower(input[0]) == 'r') customRatioText.setString(str);
 			}
@@ -178,7 +178,7 @@ int main()
 			if (tolower(input[0]) == 'r' && (isdigit(input[1]) || input[1] == '.' && isdigit(input[2])))
 			{
 				ratio = stof(input.substr(1));
-				cout << ratio << endl;
+				//cout << ratio << endl;
 			}
 			input = "";
 			string temp = "\n\n\n\n" + to_string(ratio);
