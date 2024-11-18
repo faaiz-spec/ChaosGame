@@ -176,7 +176,7 @@ int main()
 		// sets custom ratio when enter is hit
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && !RMBPressed)
 		{
-			if (tolower(input[0]) == 'r' && (isdigit(input[1]) || input[1] == '.' && isdigit(input[2])))
+			if (tolower(input[0]) == 'r' && (isdigit(input[1]) || (input[1] == '.' && isdigit(input[2]))))
 			{
 				ratio = stof(input.substr(1));
 				//cout << ratio << endl;
