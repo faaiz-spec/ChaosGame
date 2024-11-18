@@ -160,10 +160,13 @@ int main()
 			// takes in and parses text input
 			if (event.type == Event::TextEntered)
 			{
-				input += static_cast<char>(event.text.unicode);
-				//cout << input << endl;
-				string str = "\n\n\n\nEnter float: " + input.substr(1);
-				if (tolower(input[0]) == 'r') customRatioText.setString(str);
+				if (event.text.unicode < 128)
+				{
+					input += static_cast<char>(event.text.unicode);
+					cout << input << "                 " << input.size() << " \"" << input[input.size() - 1] << "\"" << endl; // will comment out later, ignore for now
+					string str = "\n\n\n\nEnter float: " + input.substr(1);
+					if (tolower(input[0]) == 'r') customRatioText.setString(str);
+				}
 			}
 		}
 
@@ -171,6 +174,17 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
 			window.close();
+		}
+
+		if (Keyboard::isKeyPressed(Keyboard::Tilde)) // i chose the ~ key because backspace seems to have some issues
+		{
+			maxDistance = -1;
+			ratio = -1;
+			RMBPressed = false;
+			customRatioText.setString("");
+			input = "";
+			vertices.clear();
+			points.clear();
 		}
 
 		// sets custom ratio when enter is hit
