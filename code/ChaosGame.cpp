@@ -138,9 +138,9 @@ int main()
 
 						// finds the distance between the two farthest points
 						int distance;
-						for (int i = 0; i < vertices.size(); ++i)
+						for (size_t i = 0; i < vertices.size(); ++i)
 						{
-							for (int j = 0; j < vertices.size(); ++j)
+							for (size_t j = 0; j < vertices.size(); ++j)
 							{
 								distance = sqrt(pow((vertices[i].x - vertices[j].x), 2) + pow((vertices[i].y - vertices[j].y), 2));
 								if (maxDistance < distance)
@@ -198,7 +198,7 @@ int main()
 		// set points if right mouse button is pressed
 		if (RMBPressed)
 		{
-			for (int i = 0; i < vertices.size() * 3; ++i)
+			for (size_t i = 0; i < vertices.size() * 3; ++i)
 			{
 				int randomPoint = rand() % vertices.size();
 
@@ -218,7 +218,7 @@ int main()
 		window.clear();
 
 		// draw vertices
-		for (int i = 0; i < vertices.size() && !RMBPressed; ++i)
+		for (size_t i = 0; i < vertices.size() && !RMBPressed; ++i)
 		{
 			RectangleShape rect(Vector2f(10, 10));
 			rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
