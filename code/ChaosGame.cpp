@@ -32,18 +32,18 @@ int main()
 
 
 	// create text objects and set their font and font size
-	Text text, customRatioText;
+	Text text, enterInput;
 	text.setFont(lol);
 	text.setString("Left click to place your vertices,\nRight click to start drawing.\n\nTo select a custom ratio, press r, type a float, and enter.");
 	text.setCharacterSize(32);
 
-	customRatioText.setFont(lol);
-	customRatioText.setCharacterSize(32);
+	enterInput.setFont(lol);
+	enterInput.setCharacterSize(32);
 	//////////////////////////////////////////
 
 
 	// create and initialize variables for while loop
-	int maxDistance = -1;
+	int maxDistance = -1, ticks = 0;
 	float ratio = -1;
 	bool RMBPressed = false;
 	string input;
@@ -160,12 +160,32 @@ int main()
 			// takes in and parses text input
 			if (event.type == Event::TextEntered)
 			{
-				if (event.text.unicode < 128)
+				if (Keyboard::isKeyPressed(Keyboard::Backspace))
+				{
+					if (input.size() > 1)
+					{
+						input.pop_back();
+					}
+				}
+				else if (event.text.unicode < 128)
 				{
 					input += static_cast<char>(event.text.unicode);
-					cout << input << "                 " << input.size() << " \"" << input[input.size() - 1] << "\"" << endl; // will comment out later, ignore for now
-					string str = "\n\n\n\nEnter float: " + input.substr(1);
-					if (tolower(input[0]) == 'r') customRatioText.setString(str);
+				}
+				if (tolower(input[0]) == 'r')
+				{
+					string str = "\n\n\n\nEnter float for ratio: " + input.substr(1);
+					enterInput.setString(str);
+				}
+				// none of these work for now, will implement later
+				if (tolower(input[0]) == 's')
+				{
+					string str = "\n\n\n\nEnter int for speed: " + input.substr(1); //ISUE IS SUBSTR OVER HERE!!!
+					enterInput.setString(str);
+				}
+				if (tolower(input[0]) == 'p')
+				{
+					string str = "\n\n\n\nEnter int for point size: " + input.substr(1); //ISUE IS SUBSTR OVER HERE!!!
+					enterInput.setString(str);
 				}
 			}
 		}
@@ -181,7 +201,7 @@ int main()
 			maxDistance = -1;
 			ratio = -1;
 			RMBPressed = false;
-			customRatioText.setString("");
+			enterInput.setString("");
 			input = "";
 			vertices.clear();
 			points.clear();
@@ -197,7 +217,7 @@ int main()
 			}
 			input = "";
 			string temp = "\n\n\n\n" + to_string(ratio);
-			customRatioText.setString(temp);
+			enterInput.setString(temp);
 		}
 		//////////////////////////////////////////
 
@@ -257,9 +277,9 @@ int main()
 			}
 
 			// Change color based on distance
-			if (minDistance < maxDistance / 7)
+			if (minDistance < ticks)
 				rect.setFillColor(Color::Red);
-			else if (minDistance < maxDistance / 4)
+			else if (minDistance < ticks + 50)
 				rect.setFillColor(Color::Yellow);
 			else
 				rect.setFillColor(Color::Green);
@@ -271,9 +291,14 @@ int main()
 		if (!RMBPressed)
 		{
 			window.draw(text);
-			window.draw(customRatioText);
+			window.draw(enterInput);
 		}
 
 		window.display();
+
+		cout << ticks << "\n";
+		if (++ticks > maxDistance / 2) ticks = 0; // this kinda works but gets slower the longer it runs so itll probably
+												  // have to cap at a certain number of points or use a clock on a different thread.
+												  // ill fix it later
 	}
 }
