@@ -19,7 +19,7 @@ void runTick(int& tick, int& max, bool& life)
 	while (life)
 	{
 		if (abs(tick += lol) > max) lol = -lol;
-		//cout << tick << "\n";
+		cout << tick << "\n";
 		this_thread::sleep_for(chrono::nanoseconds(250));
 	}
 }
@@ -167,6 +167,7 @@ int main()
 							}
 						}
 						max = maxDistance * 4 - 2;
+						ticks = 0;
 						//cout << "Max distance: " << maxDistance << endl;
 
 					}
