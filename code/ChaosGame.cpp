@@ -8,10 +8,11 @@
 #include <thread>
 #include <chrono>
 
-//Make the code easier to type with "using namespace"
+// make the code easier to type with "using namespace"
 using namespace sf;
 using namespace std;
 
+// ticks on a separate thread to not be affected by lag
 void runTick(int& tick, int& max, bool& life)
 {
 	int lol = 1;
@@ -60,16 +61,18 @@ int main()
 
 
 	// create and initialize variables for while loop
-	int maxDistance = -1, ticks = 0, pointSize = 2, generationSpeed = 3, max = 0;
+	int maxDistance = -1, ticks = 0, pointSize = 2, max = 0;
+	size_t  generationSpeed = 3;
 	float fractalRatio = -1;
 	bool RMBPressed = false, life = true;
 	string input;
 
 	vector<Vector2f> vertices;
 	vector<Vector2f> points;
-	//////////////////////////////////////////
 
 	thread ticker(runTick, ref(ticks), ref(max), ref(life));
+	//////////////////////////////////////////
+
 	/*
 	****************************************
 	Game loop
@@ -201,7 +204,7 @@ int main()
 					string str = "\n\n\n\nEnter int for point size: " + input.substr(1);
 					enterInput.setString(str);
 				}
-				else if (input.size() == 1)
+				else if (input.size() == 1) // if not an option, pop off char to not block option
 					input.pop_back();
 
 			}
@@ -213,6 +216,7 @@ int main()
 			window.close();
 		}
 
+		// reset program to allow new inputs and whatnot
 		if (Keyboard::isKeyPressed(Keyboard::Tilde)) // i chose the ~ key because backspace seems to have some issues
 		{
 			maxDistance = -1;
@@ -226,7 +230,7 @@ int main()
 			points.clear();
 		}
 
-		// sets custom ratio when enter is hit
+		// sets custom config values when enter is hit
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && !RMBPressed)
 		{
 			static string temp;
@@ -308,7 +312,7 @@ int main()
 				}
 			}
 
-			// Change color based on distance
+			// change color based on distance
 			if (minDistance < ticks * 0.166667)
 				rect.setFillColor(Color::Red);
 			else if (minDistance < ticks * 0.166667 + maxDistance * 0.166667)
@@ -334,13 +338,8 @@ int main()
 		}
 
 		window.display();
-
-		// cout << ticks << "\n";
-		// if (++ticks > maxDistance / 2) ticks = 0; // this kinda works but gets slower the longer it runs so itll probably
-												  // have to cap at a certain number of points or use a clock on a different thread.
-												  // ill fix it later
 	}
 
-	life = false;
+	life = false; // murder the thread to death
 	ticker.join();
 }
