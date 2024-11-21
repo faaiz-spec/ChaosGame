@@ -5,14 +5,31 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+#include <thread>
+#include <chrono>
 
 //Make the code easier to type with "using namespace"
 using namespace sf;
 using namespace std;
 
+void runTick(int& tick, int& max, bool& life)
+{
+	int lol = 1;
+	while (life)
+	{
+		if (abs(tick += lol) > max) lol = -lol;
+		//cout << tick << "\n";
+		this_thread::sleep_for(chrono::nanoseconds(250));
+	}
+}
+
 int main()
 {
-	/***PRE LOOP VARIABLES***/
+	/*
+	****************************************
+	Pre loop initializations
+	****************************************
+	*/
 
 	// Create a video mode object
 	VideoMode vm(1500, 900);
@@ -34,7 +51,7 @@ int main()
 	// create text objects and set their font and font size
 	Text text, enterInput;
 	text.setFont(lol);
-	text.setString("Left click to place your vertices,\nRight click to start drawing.\n\nTo select a custom ratio, press r, type a float, and enter.");
+	text.setString("Left click to place your vertices,\nRight click to start drawing.\n\nCustom options: (r)atio, (s)peed, (p)oint size.");
 	text.setCharacterSize(32);
 
 	enterInput.setFont(lol);
@@ -43,16 +60,16 @@ int main()
 
 
 	// create and initialize variables for while loop
-	int maxDistance = -1, ticks = 0;
-	float ratio = -1;
-	bool RMBPressed = false;
+	int maxDistance = -1, ticks = 0, pointSize = 2, generationSpeed = 3, max = 0;
+	float fractalRatio = -1;
+	bool RMBPressed = false, life = true;
 	string input;
 
 	vector<Vector2f> vertices;
 	vector<Vector2f> points;
 	//////////////////////////////////////////
 
-
+	thread ticker(runTick, ref(ticks), ref(max), ref(life));
 	/*
 	****************************************
 	Game loop
@@ -71,7 +88,6 @@ int main()
 			// Quit the game when the window is closed
 			if (event.type == Event::Closed)
 			{
-
 				window.close();
 			}
 
@@ -103,34 +119,34 @@ int main()
 						points.push_back(vertices[vertices.size() - 1]);
 
 						// defaults ratio values depending on vertix count (only sets if a custom value was not set)
-						if (ratio == -1)
+						if (fractalRatio == -1)
 						{
-							ratio = 0.8;
+							fractalRatio = 0.8;
 							switch (vertices.size())
 							{
 							case 3:
-								ratio = 0.5;
+								fractalRatio = 0.5;
 								break;
 							case 4:
-								ratio = 0.6666667;
+								fractalRatio = 0.6666667;
 								break;
 							case 5:
-								ratio = 0.618;
+								fractalRatio = 0.618;
 								break;
 							case 6:
-								ratio = 0.667;
+								fractalRatio = 0.667;
 								break;
 							case 7:
-								ratio = 0.692;
+								fractalRatio = 0.692;
 								break;
 							case 8:
-								ratio = 0.707;
+								fractalRatio = 0.707;
 								break;
 							case 9:
-								ratio = 0.742;
+								fractalRatio = 0.742;
 								break;
 							case 10:
-								ratio = 0.764;
+								fractalRatio = 0.764;
 								break;
 							}
 						}
@@ -147,6 +163,7 @@ int main()
 									maxDistance = distance;
 							}
 						}
+						max = maxDistance * 4 - 2;
 						//cout << "Max distance: " << maxDistance << endl;
 
 					}
@@ -163,30 +180,30 @@ int main()
 				if (Keyboard::isKeyPressed(Keyboard::Backspace))
 				{
 					if (input.size() > 1)
-					{
 						input.pop_back();
-					}
 				}
+
 				else if (event.text.unicode < 128)
-				{
 					input += static_cast<char>(event.text.unicode);
-				}
+
 				if (tolower(input[0]) == 'r')
 				{
 					string str = "\n\n\n\nEnter float for ratio: " + input.substr(1);
 					enterInput.setString(str);
 				}
-				// none of these work for now, will implement later
-				if (tolower(input[0]) == 's')
+				else if (tolower(input[0]) == 's')
 				{
-					string str = "\n\n\n\nEnter int for speed: " + input.substr(1); //ISUE IS SUBSTR OVER HERE!!!
+					string str = "\n\n\n\nEnter int for speed: " + input.substr(1);
 					enterInput.setString(str);
 				}
-				if (tolower(input[0]) == 'p')
+				else if (tolower(input[0]) == 'p')
 				{
-					string str = "\n\n\n\nEnter int for point size: " + input.substr(1); //ISUE IS SUBSTR OVER HERE!!!
+					string str = "\n\n\n\nEnter int for point size: " + input.substr(1);
 					enterInput.setString(str);
 				}
+				else if (input.size() == 1)
+					input.pop_back();
+
 			}
 		}
 
@@ -199,7 +216,9 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Tilde)) // i chose the ~ key because backspace seems to have some issues
 		{
 			maxDistance = -1;
-			ratio = -1;
+			fractalRatio = -1;
+			generationSpeed = 3;
+			pointSize = 2;
 			RMBPressed = false;
 			enterInput.setString("");
 			input = "";
@@ -210,13 +229,26 @@ int main()
 		// sets custom ratio when enter is hit
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && !RMBPressed)
 		{
+			static string temp;
 			if (tolower(input[0]) == 'r' && (isdigit(input[1]) || (input[1] == '.' && isdigit(input[2]))))
 			{
-				ratio = stof(input.substr(1));
+				fractalRatio = stof(input.substr(1));
+				temp = "\n\n\n\nFractal ratio: " + to_string(fractalRatio);
+				//cout << ratio << endl;
+			}
+			else if (tolower(input[0]) == 's' && (isdigit(input[1])))
+			{
+				generationSpeed = stoi(input.substr(1));
+				temp = "\n\n\n\nPoint generation speed: " + to_string(generationSpeed);
+				//cout << ratio << endl;
+			}
+			else if (tolower(input[0]) == 'p' && (isdigit(input[1])))
+			{
+				pointSize = stoi(input.substr(1));
+				temp = "\n\n\n\nPoint size: " + to_string(pointSize);
 				//cout << ratio << endl;
 			}
 			input = "";
-			string temp = "\n\n\n\n" + to_string(ratio);
 			enterInput.setString(temp);
 		}
 		//////////////////////////////////////////
@@ -232,12 +264,12 @@ int main()
 		// set points if right mouse button is pressed
 		if (RMBPressed)
 		{
-			for (size_t i = 0; i < vertices.size() * 3; ++i)
+			for (size_t i = 0; i < generationSpeed; ++i)
 			{
 				int randomPoint = rand() % vertices.size();
 
-				Vector2f newpoint = { (vertices[randomPoint].x - points[points.size() - 1].x) * ratio + points[points.size() - 1].x,
-									  (vertices[randomPoint].y - points[points.size() - 1].y) * ratio + points[points.size() - 1].y };
+				Vector2f newpoint = { (vertices[randomPoint].x - points[points.size() - 1].x) * fractalRatio + points[points.size() - 1].x,
+									  (vertices[randomPoint].y - points[points.size() - 1].y) * fractalRatio + points[points.size() - 1].y };
 				points.push_back(newpoint);
 			}
 		}
@@ -263,7 +295,7 @@ int main()
 		// draw points
 		for (const auto& point : points)
 		{
-			RectangleShape rect(Vector2f(2, 2));
+			RectangleShape rect(Vector2f(pointSize, pointSize));
 			rect.setPosition(point);
 			rect.setFillColor(Color::Red);
 			float minDistance = std::numeric_limits<float>::max();
@@ -277,12 +309,19 @@ int main()
 			}
 
 			// Change color based on distance
-			if (minDistance < ticks)
+			if (minDistance < ticks * 0.166667)
 				rect.setFillColor(Color::Red);
-			else if (minDistance < ticks + 50)
+			else if (minDistance < ticks * 0.166667 + maxDistance * 0.166667)
 				rect.setFillColor(Color::Yellow);
-			else
+			else if (minDistance < ticks * 0.166667 + maxDistance * 0.333333)
 				rect.setFillColor(Color::Green);
+			else if (minDistance < ticks * 0.166667 + maxDistance * 0.5)
+				rect.setFillColor(Color::Cyan);
+			else if (minDistance < ticks * 0.166667 + maxDistance * 0.666667)
+				rect.setFillColor(Color::Blue);
+			else
+				rect.setFillColor(Color::Magenta);
+
 
 			window.draw(rect);
 		}
@@ -296,9 +335,12 @@ int main()
 
 		window.display();
 
-		cout << ticks << "\n";
-		if (++ticks > maxDistance / 2) ticks = 0; // this kinda works but gets slower the longer it runs so itll probably
+		// cout << ticks << "\n";
+		// if (++ticks > maxDistance / 2) ticks = 0; // this kinda works but gets slower the longer it runs so itll probably
 												  // have to cap at a certain number of points or use a clock on a different thread.
 												  // ill fix it later
 	}
+
+	life = false;
+	ticker.join();
 }
